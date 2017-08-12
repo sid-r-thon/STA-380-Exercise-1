@@ -7,6 +7,25 @@ Siddhant Shah, Sidhaarthan Velur Golpalakrishnan, Saswata Das and Anurag Agarwal
 
 Setting the working directory and loading all the required libraries. BiotypeR is a package which was cloned from GitHub which is used for calculating the CH index for different clusters
 
+``` r
+setwd("C:/Users/sasia/Desktop/McCombs School of Business/Summer Semester/Introduction to Predictive Modeling/Part-2-Dr.James/Assignments/Assignment-1")
+library(corrplot)
+library(mosaic)
+library(quantmod)
+library(foreach)
+library(knitr)
+library(ggplot2)
+library(LICORS) 
+library(foreach)
+library(mosaic)
+library(corrplot)
+library(devtools)
+install_github("tapj/biotyper")
+library(BiotypeR)
+library(fpc)
+set.seed(123)
+```
+
 ### Probability Practice
 
 ##### Part A

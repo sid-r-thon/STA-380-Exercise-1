@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
 
 Setting the working directory and loading all the required libraries. BiotypeR is a package which was cloned from GitHub which is used for calculating the CH index for different clusters
 
-```{r, include=FALSE}
+```{r}
 setwd("C:/Users/sasia/Desktop/McCombs School of Business/Summer Semester/Introduction to Predictive Modeling/Part-2-Dr.James/Assignments/Assignment-1")
 library(corrplot)
 library(mosaic)
