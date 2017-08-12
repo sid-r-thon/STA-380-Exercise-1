@@ -9,6 +9,28 @@ output: rmarkdown::github_document
 knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
 ```
 
+##### Setting Working Directory and Loading Required Packages
+
+Setting the working directory and loading all the required libraries. BiotypeR is a package which was cloned from GitHub which is used for calculating the CH index for different clusters
+
+```{r, include=FALSE}
+setwd("C:/Users/sasia/Desktop/McCombs School of Business/Summer Semester/Introduction to Predictive Modeling/Part-2-Dr.James/Assignments/Assignment-1")
+library(corrplot)
+library(mosaic)
+library(quantmod)
+library(foreach)
+library(knitr)
+library(ggplot2)
+library(LICORS) 
+library(foreach)
+library(mosaic)
+library(corrplot)
+library(devtools)
+install_github("tapj/biotyper")
+library(BiotypeR)
+library(fpc)
+set.seed(123)
+```
 
 ### Probability Practice
 
@@ -41,7 +63,7 @@ P(Y=Yes) = P(Y=Yes|X=TC)P(X=TC) + P(Y=Yes|X=RC)P(X=RC)
 => P(Y=Yes|X=TC) = 5/7
 
 Fraction of people who are truthful clickers and answered yes = 5/7
-
+  
 #####Part B.
 
 From the information given, we know that 
@@ -50,10 +72,12 @@ Sensitivity  =   0.993 = P(PT/D)
 Specificity  =   0.9999 = P(NT/D')
 P(D)         =   0.0025% = 0.000025
 
-where PT  - Positive test
-NT  - Negative test
-D   - Person has the disease
-D'  - Person does not have the disease
+where 
+
+- PT  - Positive test
+- NT  - Negative test
+- D   - Person has the disease
+- D'  - Person does not have the disease
 
 We need to find P(D/PT)
 
@@ -97,8 +121,7 @@ The case is to decide whether building a green building is profitable over build
 Reading the data and creating subsets based on green rating.
 
 ```{r}
-
-greenbuildings = read.csv("C:\\Users\\sasia\\Desktop\\McCombs School of Business\\Summer Semester\\Introduction to Predictive Modeling\\Part-2-Dr.James\\Assignments\\Assignment-1\\greenbuildings.csv",sep=',')
+greenbuildings = read.csv("greenbuildings.csv")
 
 #Replacing missing values with mean and converting into right datatype
 
@@ -120,7 +143,6 @@ non_green = subset(greenbuildings, green_rating== 0)
 Studying correlations between variables in the datasets split by green rating.
 
 ```{r}
-library(corrplot)
 
 varnumeric = c('size',	'Rent',	'empl_gr',	'leasing_rate',	'stories',	'age',	'cd_total_07',	'hd_total07',	'total_dd_07',	'Precipitation',	'Gas_Costs',	'Electricity_Costs',	'cluster_rent')
 
@@ -136,7 +158,7 @@ corrplot::corrplot(corr_data_eval2,method="color")
 
 ```
 
-From the the above correlation matrices, we can observe that there are few strongly correlated variables, however, these are not with rent per se. Plotting these strongly correlated variables to understand their relationships better and derive meaningful insights.
+From the the above correlation matrices, we can observe that there are a few strongly correlated variables, however, these are not with rent per se. To deep dive a little more into these highly correlated variables, we plotted them individually to observe the relationship that exists between them.
 
 ```{r}
 par(mfrow=c(3,2))
@@ -191,11 +213,11 @@ par(mfrow=c(2,1))
 
 #Histogram by Size
 
-hist(non_green$size,breaks=500,pch=19, main = "Range of non green buildings chosen by size")
+hist(non_green$size,breaks=500,pch=19, main = "Frequency Distribution of non green buildings chosen by size")
 abline(v=200000,lwd=2, col="blue")
 abline(v=300000,lwd=2, col="blue")
 
-hist(green$size,breaks=500,pch=19, main = "Range of green buildings chosen by size")
+hist(green$size,breaks=500,pch=19, main = "Frequency Distribution of green buildings chosen by size")
 abline(v=200000,lwd=2, col="blue")
 abline(v=300000,lwd=2, col="blue")
 
@@ -204,11 +226,11 @@ par(mfrow=c(2,1))
 
 #Histogram by stories
 
-hist(non_green$stories,breaks = 50,pch=19, main = "Range of non green buildings chosen by stories")
+hist(non_green$stories,breaks = 50,pch=19, main = "Frequency Distribution of non green buildings chosen by stories")
 abline(v=12,lwd=2, col="blue")
 abline(v=18,lwd=2, col="blue")
 
-hist(green$stories,breaks = 50,pch=19, main = "Range of green buildings chosen by stories")
+hist(green$stories,breaks = 50,pch=19, main = "Frequency Distribution of green buildings chosen by stories")
 abline(v=12,lwd=2, col="blue")
 abline(v=18, col="blue")
 
@@ -273,10 +295,6 @@ To validate this, we also compared rents between green and non-green bildings ba
 #####(a) Import data
 
 ```{r echo=TRUE}
-library(mosaic)
-library(quantmod)
-library(foreach)
-
 #Import ETFs
 myStocks = c("SPY","TLT","LQD","EEM","VNQ")
 getSymbols(myStocks)
@@ -298,8 +316,6 @@ In order to understand the risk/return properties of each asset class, our plan 
 * Compute mean and standard deviation on returns for each ETF to understand risk and return
 
 ```{r echo=TRUE}
-library(knitr)
-
 # Combine close to close changes in a single matrix
 all_returns = cbind(ClCl(SPYa),ClCl(TLTa),ClCl(LQDa),ClCl(EEMa),ClCl(VNQa))
 all_returns = as.matrix(na.omit(all_returns))
@@ -400,13 +416,12 @@ Let's allocate funds with a more conservative approach and take risks less than 
 * From the risk/return table obtained in part (b), we know that LQD is the least risky asset. We will allocate largest proportion to this ETF
 * From the correlation matrix, we found that LQD has lowest correlation with EEM (0.08) and VNQ (0.06). Absence of correlation in the elements of the portfolio ensures that losses do not multiply in case either of them goes down. So we have allocated remaining assets equally in EEM and VNQ
 
-Safe Portfolio - 
+
+Portfolio with Equal Asset Allocation- 
 
 * LQD : 80%
 * EEM : 10%
 * VNQ : 10%
-
-Portfolio : 33% allocation each in SPY, TLT and LQD
 
 ```{r echo=TRUE}
 # Now simulate many different possible scenarios  
@@ -507,25 +522,10 @@ The data presented here is of 7882 users whose tweets have been classified into 
 
 Our aim is to identify any interesting market segments that stands out for the data. In this case, we have defined "market segment" as a group of people having correlated interests as observed from their tweets.
 
-##### Loading Required Packages
-
-```{r}
-library(ggplot2)
-library(LICORS) 
-library(foreach)
-library(mosaic)
-library(corrplot)
-library(devtools)
-install_github("tapj/biotyper")
-library(BiotypeR)
-library(fpc)
-set.seed(123)
-```
-
 ##### Reading the data 
 
 ```{r echo=FALSE}
-data = read.csv('C:\\Users\\sasia\\Desktop\\McCombs School of Business\\Summer Semester\\Introduction to Predictive Modeling\\Part-2-Dr.James\\Assignments\\Assignment-1\\social_marketing.csv')
+data = read.csv('social_marketing.csv')
 ```
 
 We did a basic summary of the data to identify the number of tweets in each of the categories

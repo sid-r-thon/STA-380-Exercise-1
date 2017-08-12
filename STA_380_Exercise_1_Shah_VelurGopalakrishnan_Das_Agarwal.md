@@ -3,6 +3,10 @@ STA380 - Exercise01
 Siddhant Shah, Sidhaarthan Velur Golpalakrishnan, Saswata Das and Anurag Agarwal
 10 August 2017
 
+##### Setting Working Directory and Loading Required Packages
+
+Setting the working directory and loading all the required libraries. BiotypeR is a package which was cloned from GitHub which is used for calculating the CH index for different clusters
+
 ### Probability Practice
 
 ##### Part A
@@ -41,7 +45,12 @@ From the information given, we know that
 
 Sensitivity = 0.993 = P(PT/D) Specificity = 0.9999 = P(NT/D') P(D) = 0.0025% = 0.000025
 
-where PT - Positive test NT - Negative test D - Person has the disease D' - Person does not have the disease
+where
+
+-   PT - Positive test
+-   NT - Negative test
+-   D - Person has the disease
+-   D' - Person does not have the disease
 
 We need to find P(D/PT)
 
@@ -84,7 +93,7 @@ The case is to decide whether building a green building is profitable over build
 Reading the data and creating subsets based on green rating.
 
 ``` r
-greenbuildings = read.csv("C:\\Users\\sasia\\Desktop\\McCombs School of Business\\Summer Semester\\Introduction to Predictive Modeling\\Part-2-Dr.James\\Assignments\\Assignment-1\\greenbuildings.csv",sep=',')
+greenbuildings = read.csv("greenbuildings.csv")
 
 #Replacing missing values with mean and converting into right datatype
 
@@ -104,8 +113,6 @@ non_green = subset(greenbuildings, green_rating== 0)
 Studying correlations between variables in the datasets split by green rating.
 
 ``` r
-library(corrplot)
-
 varnumeric = c('size',  'Rent', 'empl_gr',  'leasing_rate', 'stories',  'age',  'cd_total_07',  'hd_total07',   'total_dd_07',  'Precipitation',    'Gas_Costs',    'Electricity_Costs',    'cluster_rent')
 
 
@@ -118,9 +125,9 @@ corr_data_eval2 = cor(non_green[varnumeric],use = "complete.obs")
 corrplot::corrplot(corr_data_eval2,method="color")
 ```
 
-![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-2-1.png)
+![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-3-1.png)
 
-From the the above correlation matrices, we can observe that there are few strongly correlated variables, however, these are not with rent per se. Plotting these strongly correlated variables to understand their relationships better and derive meaningful insights.
+From the the above correlation matrices, we can observe that there are a few strongly correlated variables, however, these are not with rent per se. To deep dive a little more into these highly correlated variables, we plotted them individually to observe the relationship that exists between them.
 
 ``` r
 par(mfrow=c(3,2))
@@ -138,7 +145,7 @@ plot(non_green$Electricity_Costs, non_green$hd_total07, main = 'Non Green : Elec
 plot(green$Electricity_Costs, green$hd_total07, main = 'Green : Electricity_Costs vs Size', xlab = 'Electricity_Costs',ylab = 'hd_total07')
 ```
 
-![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-3-1.png)
+![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-4-1.png)
 
 Now that we understand the data better, we dissect the analysis of the Stats Guru. On doing so, we observe the following errors -
 
@@ -151,7 +158,7 @@ Let's look at the bi-variate analysis of **Rent vs Size** of the property and ch
 plot(greenbuildings$Rent, greenbuildings$size, main = 'Rent vs Size - per sqft', xlab = 'Rent',ylab = 'Size')
 ```
 
-![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-4-1.png)
+![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-5-1.png)
 
 Normally, we would expect that rent per sq foot would increase with increase in the number of stories. But this is not something we observe from the plot.
 
@@ -173,32 +180,32 @@ par(mfrow=c(2,1))
 
 #Histogram by Size
 
-hist(non_green$size,breaks=500,pch=19, main = "Range of non green buildings chosen by size")
+hist(non_green$size,breaks=500,pch=19, main = "Frequency Distribution of non green buildings chosen by size")
 abline(v=200000,lwd=2, col="blue")
 abline(v=300000,lwd=2, col="blue")
 
-hist(green$size,breaks=500,pch=19, main = "Range of green buildings chosen by size")
+hist(green$size,breaks=500,pch=19, main = "Frequency Distribution of green buildings chosen by size")
 abline(v=200000,lwd=2, col="blue")
 abline(v=300000,lwd=2, col="blue")
 ```
 
-![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-5-1.png)
+![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-6-1.png)
 
 ``` r
 par(mfrow=c(2,1))
 
 #Histogram by stories
 
-hist(non_green$stories,breaks = 50,pch=19, main = "Range of non green buildings chosen by stories")
+hist(non_green$stories,breaks = 50,pch=19, main = "Frequency Distribution of non green buildings chosen by stories")
 abline(v=12,lwd=2, col="blue")
 abline(v=18,lwd=2, col="blue")
 
-hist(green$stories,breaks = 50,pch=19, main = "Range of green buildings chosen by stories")
+hist(green$stories,breaks = 50,pch=19, main = "Frequency Distribution of green buildings chosen by stories")
 abline(v=12,lwd=2, col="blue")
 abline(v=18, col="blue")
 ```
 
-![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-5-2.png)
+![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-6-2.png)
 
 **Filtering for buildings similar to the one to be constructed**
 
@@ -222,7 +229,7 @@ plot(data_filtered_non_green$size,data_filtered_non_green$Rent,main="Size of Bui
 abline(lm(Rent~size,data=data_filtered_non_green),lwd=2, col="red")
 ```
 
-![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-7-1.png)
+![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-8-1.png)
 
 ``` r
 plot(data_filtered_green$size,data_filtered_green$Rent,main="Size of Building vs Rent Green Buildings",xlab="Size", ylab="Rent",ylim = c(10,80),xlim=c(200000,300000))
@@ -230,7 +237,7 @@ plot(data_filtered_green$size,data_filtered_green$Rent,main="Size of Building vs
 abline(lm(Rent~size,data=data_filtered_green),lwd=2, col="red")
 ```
 
-![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-7-2.png)
+![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-8-2.png)
 
 We see from the above plots that for size 250000, non-green buildings generate a higher rent when compared to green buildings, contradicting the findings from the "Excel-Guru"
 
@@ -244,7 +251,7 @@ plot(data_filtered_non_green$age,data_filtered_non_green$Rent,main="Age of Build
 abline(lm(Rent~age,data=data_filtered_non_green),lwd=2, col="red")
 ```
 
-![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-8-1.png)
+![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-9-1.png)
 
 ``` r
 plot(data_filtered_green$age,data_filtered_green$Rent,main="Age of Building vs Rent Green Buildings",xlab="Age", ylab="Rent",ylim = c(10,80),xlim=c(0,30))
@@ -252,7 +259,7 @@ plot(data_filtered_green$age,data_filtered_green$Rent,main="Age of Building vs R
 abline(lm(Rent~age,data=data_filtered_green),lwd=2, col="red")
 ```
 
-![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-8-2.png)
+![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-9-2.png)
 
 To validate this, we also compared rents between green and non-green bildings based on the age of the buildings. This also shows a similar relationship as seen above, with the rent of non-green buildings to remain relatively higher as compared to green buildings.
 
@@ -263,10 +270,6 @@ To validate this, we also compared rents between green and non-green bildings ba
 ##### (a) Import data
 
 ``` r
-library(mosaic)
-library(quantmod)
-library(foreach)
-
 #Import ETFs
 myStocks = c("SPY","TLT","LQD","EEM","VNQ")
 getSymbols(myStocks)
@@ -292,8 +295,6 @@ In order to understand the risk/return properties of each asset class, our plan 
 -   Compute mean and standard deviation on returns for each ETF to understand risk and return
 
 ``` r
-library(knitr)
-
 # Combine close to close changes in a single matrix
 all_returns = cbind(ClCl(SPYa),ClCl(TLTa),ClCl(LQDa),ClCl(EEMa),ClCl(VNQa))
 all_returns = as.matrix(na.omit(all_returns))
@@ -399,7 +400,7 @@ mean(sim1[,n_days])
 hist(sim1[,n_days]- initial_wealth, breaks=30, main="Distribution of Final Return", xlab="Final Return")
 ```
 
-![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-12-1.png)
+![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-13-1.png)
 
 ``` r
 # Calculate 5% value at risk
@@ -421,13 +422,11 @@ Let's allocate funds with a more conservative approach and take risks less than 
 -   From the risk/return table obtained in part (b), we know that LQD is the least risky asset. We will allocate largest proportion to this ETF
 -   From the correlation matrix, we found that LQD has lowest correlation with EEM (0.08) and VNQ (0.06). Absence of correlation in the elements of the portfolio ensures that losses do not multiply in case either of them goes down. So we have allocated remaining assets equally in EEM and VNQ
 
-Safe Portfolio -
+Portfolio with Equal Asset Allocation-
 
 -   LQD : 80%
 -   EEM : 10%
 -   VNQ : 10%
-
-Portfolio : 33% allocation each in SPY, TLT and LQD
 
 ``` r
 # Now simulate many different possible scenarios  
@@ -458,7 +457,7 @@ mean(sim2[,n_days])
 hist(sim2[,n_days]- initial_wealth, breaks=30, main="Distribution of Final Return", xlab="Final Return")
 ```
 
-![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-13-1.png)
+![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-14-1.png)
 
 ``` r
 # Calculate 5% value at risk
@@ -538,7 +537,7 @@ head(sim3)
 hist(sim3[,n_days], 25, main="Distribution of Final Wealth", xlab="Final Wealth")
 ```
 
-![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-14-1.png)
+![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-15-1.png)
 
 ``` r
 # Profit/loss
@@ -551,7 +550,7 @@ mean(sim3[,n_days])
 hist(sim3[,n_days]- initial_wealth, breaks=30, main="Distribution of Final Return", xlab="Final Return")
 ```
 
-![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-14-2.png)
+![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-15-2.png)
 
 ``` r
 # Calculate 5% value at risk
@@ -564,7 +563,7 @@ quantile(sim3[,n_days], 0.05) - initial_wealth
 -   The expected return at the end of 20 trading days for aggressive portfolio = $1982
 -   VaR 5% = $1.300710^{4}
 
-![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-15-1.png)
+![](STA_380_Exercise_1_Shah_VelurGopalakrishnan_Das_Agarwal_files/figure-markdown_github-ascii_identifiers/unnamed-chunk-16-1.png)
 
 ### Market Segmentation
 
@@ -575,21 +574,6 @@ This was data collected in the course of a market-research study using followers
 The data presented here is of 7882 users whose tweets have been classified into 36 categories representing an area of interest. However, the categorization was done manually and hence we cannot rely on it solely. The values in this table represent the number of tweets for each person in that category.
 
 Our aim is to identify any interesting market segments that stands out for the data. In this case, we have defined "market segment" as a group of people having correlated interests as observed from their tweets.
-
-##### Loading Required Packages
-
-``` r
-library(ggplot2)
-library(LICORS) 
-library(foreach)
-library(mosaic)
-library(corrplot)
-library(devtools)
-install_github("tapj/biotyper")
-library(BiotypeR)
-library(fpc)
-set.seed(123)
-```
 
 ##### Reading the data
 
@@ -765,42 +749,6 @@ for (i in 1:6)
 ```
 
     ##   current_events           travel    photo_sharing          tv_film 
-    ##     4.408882e-02     3.023162e-02     4.978949e-02     2.209194e-02 
-    ##    sports_fandom         politics             food           family 
-    ##     1.130943e-01     2.158195e-02     8.799674e-02     5.053898e-02 
-    ##  home_and_garden            music             news    online_gaming 
-    ##     1.361356e-02     1.562662e-02     1.657595e-02     1.714491e-02 
-    ##         shopping health_nutrition      college_uni   sports_playing 
-    ##     2.528611e-02     2.662955e-02     2.002439e-02     1.366770e-02 
-    ##          cooking              eco        computers         business 
-    ##     2.269156e-02     1.374378e-02     1.415085e-02     9.480608e-03 
-    ##         outdoors           crafts       automotive              art 
-    ##     1.231415e-02     1.954875e-02     1.917840e-02     1.501325e-02 
-    ##         religion           beauty        parenting           dating 
-    ##     9.684976e-02     1.959338e-02     7.629477e-02     1.235053e-02 
-    ##           school personal_fitness          fashion   small_business 
-    ##     5.027167e-02     1.830029e-02     1.671819e-02     8.215974e-03 
-    ##             spam            adult 
-    ##     5.734507e-05     7.244052e-03 
-    ##   current_events           travel    photo_sharing          tv_film 
-    ##     4.599484e-02     9.720756e-02     4.638933e-02     2.605716e-02 
-    ##    sports_fandom         politics             food           family 
-    ##     4.869726e-02     1.576764e-01     2.669135e-02     2.214600e-02 
-    ##  home_and_garden            music             news    online_gaming 
-    ##     1.399907e-02     1.471277e-02     1.104946e-01     1.561287e-02 
-    ##         shopping health_nutrition      college_uni   sports_playing 
-    ##     2.363602e-02     2.243734e-02     2.260919e-02     1.308738e-02 
-    ##          cooking              eco        computers         business 
-    ##     2.000989e-02     1.062760e-02     3.834765e-02     1.155046e-02 
-    ##         outdoors           crafts       automotive              art 
-    ##     1.979013e-02     1.044706e-02     5.579605e-02     1.108910e-02 
-    ##         religion           beauty        parenting           dating 
-    ##     1.708299e-02     8.907615e-03     1.881688e-02     1.714997e-02 
-    ##           school personal_fitness          fashion   small_business 
-    ##     1.354557e-02     1.489858e-02     1.065697e-02     8.570429e-03 
-    ##             spam            adult 
-    ##     8.742764e-05     5.176408e-03 
-    ##   current_events           travel    photo_sharing          tv_film 
     ##     0.0794866461     0.0500684353     0.1315409807     0.0543358063 
     ##    sports_fandom         politics             food           family 
     ##     0.0330455974     0.0348119979     0.0261038752     0.0248148154 
@@ -837,24 +785,6 @@ for (i in 1:6)
     ##             spam            adult 
     ##     0.0000513489     0.0059140669 
     ##   current_events           travel    photo_sharing          tv_film 
-    ##     0.0393247525     0.0341599237     0.0566658250     0.0320705443 
-    ##    sports_fandom         politics             food           family 
-    ##     0.0260214439     0.0237818808     0.0255721771     0.0213317388 
-    ##  home_and_garden            music             news    online_gaming 
-    ##     0.0129169018     0.0165087259     0.0149205180     0.1830925736 
-    ##         shopping health_nutrition      college_uni   sports_playing 
-    ##     0.0218636737     0.0265372064     0.1990313280     0.0500610035 
-    ##          cooking              eco        computers         business 
-    ##     0.0236393595     0.0098848081     0.0114014759     0.0083463556 
-    ##         outdoors           crafts       automotive              art 
-    ##     0.0118993570     0.0100615806     0.0159070928     0.0209561859 
-    ##         religion           beauty        parenting           dating 
-    ##     0.0130924538     0.0080274544     0.0120574028     0.0134635237 
-    ##           school personal_fitness          fashion   small_business 
-    ##     0.0100622430     0.0170661326     0.0139037935     0.0093248122 
-    ##             spam            adult 
-    ##     0.0002294053     0.0068163462 
-    ##   current_events           travel    photo_sharing          tv_film 
     ##     3.990130e-02     3.121762e-02     5.096545e-02     1.981560e-02 
     ##    sports_fandom         politics             food           family 
     ##     2.422678e-02     2.453764e-02     4.154461e-02     1.600430e-02 
@@ -871,7 +801,61 @@ for (i in 1:6)
     ##           school personal_fitness          fashion   small_business 
     ##     1.110233e-02     1.219767e-01     1.353095e-02     6.149978e-03 
     ##             spam            adult 
-    ##     7.182214e-05     6.617151e-03
+    ##     7.182214e-05     6.617151e-03 
+    ##   current_events           travel    photo_sharing          tv_film 
+    ##     4.408882e-02     3.023162e-02     4.978949e-02     2.209194e-02 
+    ##    sports_fandom         politics             food           family 
+    ##     1.130943e-01     2.158195e-02     8.799674e-02     5.053898e-02 
+    ##  home_and_garden            music             news    online_gaming 
+    ##     1.361356e-02     1.562662e-02     1.657595e-02     1.714491e-02 
+    ##         shopping health_nutrition      college_uni   sports_playing 
+    ##     2.528611e-02     2.662955e-02     2.002439e-02     1.366770e-02 
+    ##          cooking              eco        computers         business 
+    ##     2.269156e-02     1.374378e-02     1.415085e-02     9.480608e-03 
+    ##         outdoors           crafts       automotive              art 
+    ##     1.231415e-02     1.954875e-02     1.917840e-02     1.501325e-02 
+    ##         religion           beauty        parenting           dating 
+    ##     9.684976e-02     1.959338e-02     7.629477e-02     1.235053e-02 
+    ##           school personal_fitness          fashion   small_business 
+    ##     5.027167e-02     1.830029e-02     1.671819e-02     8.215974e-03 
+    ##             spam            adult 
+    ##     5.734507e-05     7.244052e-03 
+    ##   current_events           travel    photo_sharing          tv_film 
+    ##     4.599484e-02     9.720756e-02     4.638933e-02     2.605716e-02 
+    ##    sports_fandom         politics             food           family 
+    ##     4.869726e-02     1.576764e-01     2.669135e-02     2.214600e-02 
+    ##  home_and_garden            music             news    online_gaming 
+    ##     1.399907e-02     1.471277e-02     1.104946e-01     1.561287e-02 
+    ##         shopping health_nutrition      college_uni   sports_playing 
+    ##     2.363602e-02     2.243734e-02     2.260919e-02     1.308738e-02 
+    ##          cooking              eco        computers         business 
+    ##     2.000989e-02     1.062760e-02     3.834765e-02     1.155046e-02 
+    ##         outdoors           crafts       automotive              art 
+    ##     1.979013e-02     1.044706e-02     5.579605e-02     1.108910e-02 
+    ##         religion           beauty        parenting           dating 
+    ##     1.708299e-02     8.907615e-03     1.881688e-02     1.714997e-02 
+    ##           school personal_fitness          fashion   small_business 
+    ##     1.354557e-02     1.489858e-02     1.065697e-02     8.570429e-03 
+    ##             spam            adult 
+    ##     8.742764e-05     5.176408e-03 
+    ##   current_events           travel    photo_sharing          tv_film 
+    ##     0.0393247525     0.0341599237     0.0566658250     0.0320705443 
+    ##    sports_fandom         politics             food           family 
+    ##     0.0260214439     0.0237818808     0.0255721771     0.0213317388 
+    ##  home_and_garden            music             news    online_gaming 
+    ##     0.0129169018     0.0165087259     0.0149205180     0.1830925736 
+    ##         shopping health_nutrition      college_uni   sports_playing 
+    ##     0.0218636737     0.0265372064     0.1990313280     0.0500610035 
+    ##          cooking              eco        computers         business 
+    ##     0.0236393595     0.0098848081     0.0114014759     0.0083463556 
+    ##         outdoors           crafts       automotive              art 
+    ##     0.0118993570     0.0100615806     0.0159070928     0.0209561859 
+    ##         religion           beauty        parenting           dating 
+    ##     0.0130924538     0.0080274544     0.0120574028     0.0134635237 
+    ##           school personal_fitness          fashion   small_business 
+    ##     0.0100622430     0.0170661326     0.0139037935     0.0093248122 
+    ##             spam            adult 
+    ##     0.0002294053     0.0068163462
 
 ``` r
 Cluster_Property<- as.data.frame(matrix(0, ncol = 1, nrow = ncol(data_mod)-1))
@@ -889,77 +873,77 @@ print (Cluster_Properties)
 ```
 
     ##                  cluster_mean cluster_mean.1 cluster_mean.2 cluster_mean.3
-    ## current_events   4.408882e-02   4.599484e-02   7.948665e-02   4.021402e-02
-    ## travel           3.023162e-02   9.720756e-02   5.006844e-02   3.153739e-02
-    ## photo_sharing    4.978949e-02   4.638933e-02   1.315410e-01   1.052908e-01
-    ## tv_film          2.209194e-02   2.605716e-02   5.433581e-02   1.928266e-02
-    ## sports_fandom    1.130943e-01   4.869726e-02   3.304560e-02   2.175871e-02
-    ## politics         2.158195e-02   1.576764e-01   3.481200e-02   2.219759e-02
-    ## food             8.799674e-02   2.669135e-02   2.610388e-02   1.853762e-02
-    ## family           5.053898e-02   2.214600e-02   2.481482e-02   1.661374e-02
-    ## home_and_garden  1.361356e-02   1.399907e-02   2.374722e-02   1.329099e-02
-    ## music            1.562662e-02   1.471277e-02   2.911512e-02   2.327319e-02
-    ## news             1.657595e-02   1.104946e-01   1.712418e-02   1.588011e-02
-    ## online_gaming    1.714491e-02   1.561287e-02   1.802884e-02   1.850446e-02
-    ## shopping         2.528611e-02   2.363602e-02   7.832450e-02   3.151453e-02
-    ## health_nutrition 2.662955e-02   2.243734e-02   2.486974e-02   3.207091e-02
-    ## college_uni      2.002439e-02   2.260919e-02   3.675513e-02   2.396056e-02
-    ## sports_playing   1.366770e-02   1.308738e-02   1.862914e-02   1.621454e-02
-    ## cooking          2.269156e-02   2.000989e-02   2.249278e-02   1.898229e-01
-    ## eco              1.374378e-02   1.062760e-02   2.067639e-02   9.820261e-03
-    ## computers        1.415085e-02   3.834765e-02   1.638921e-02   1.300458e-02
-    ## business         9.480608e-03   1.155046e-02   1.897658e-02   1.149444e-02
-    ## outdoors         1.231415e-02   1.979013e-02   1.151011e-02   1.389399e-02
-    ## crafts           1.954875e-02   1.044706e-02   1.920557e-02   1.067294e-02
-    ## automotive       1.917840e-02   5.579605e-02   2.092373e-02   1.515891e-02
-    ## art              1.501325e-02   1.108910e-02   3.172247e-02   1.459919e-02
-    ## religion         9.684976e-02   1.708299e-02   1.576558e-02   1.357575e-02
-    ## beauty           1.959338e-02   8.907615e-03   1.148602e-02   7.141354e-02
-    ## parenting        7.629477e-02   1.881688e-02   1.377528e-02   1.313035e-02
-    ## dating           1.235053e-02   1.714997e-02   2.500740e-02   1.785816e-02
-    ## school           5.027167e-02   1.354557e-02   1.925708e-02   1.817693e-02
-    ## personal_fitness 1.830029e-02   1.489858e-02   1.774212e-02   1.877573e-02
-    ## fashion          1.671819e-02   1.065697e-02   1.772297e-02   1.043254e-01
-    ## small_business   8.215974e-03   8.570429e-03   1.496451e-02   8.169649e-03
-    ## spam             5.734507e-05   8.742764e-05   3.708754e-04   5.134890e-05
-    ## adult            7.244052e-03   5.176408e-03   2.120928e-02   5.914067e-03
-    ## total            3.995725e+01   3.773600e+01   2.662232e+01   4.321077e+01
+    ## current_events   7.948665e-02   4.021402e-02   3.990130e-02   4.408882e-02
+    ## travel           5.006844e-02   3.153739e-02   3.121762e-02   3.023162e-02
+    ## photo_sharing    1.315410e-01   1.052908e-01   5.096545e-02   4.978949e-02
+    ## tv_film          5.433581e-02   1.928266e-02   1.981560e-02   2.209194e-02
+    ## sports_fandom    3.304560e-02   2.175871e-02   2.422678e-02   1.130943e-01
+    ## politics         3.481200e-02   2.219759e-02   2.453764e-02   2.158195e-02
+    ## food             2.610388e-02   1.853762e-02   4.154461e-02   8.799674e-02
+    ## family           2.481482e-02   1.661374e-02   1.600430e-02   5.053898e-02
+    ## home_and_garden  2.374722e-02   1.329099e-02   1.325922e-02   1.361356e-02
+    ## music            2.911512e-02   2.327319e-02   1.511961e-02   1.562662e-02
+    ## news             1.712418e-02   1.588011e-02   2.069572e-02   1.657595e-02
+    ## online_gaming    1.802884e-02   1.850446e-02   1.794523e-02   1.714491e-02
+    ## shopping         7.832450e-02   3.151453e-02   2.670215e-02   2.528611e-02
+    ## health_nutrition 2.486974e-02   3.207091e-02   2.248779e-01   2.662955e-02
+    ## college_uni      3.675513e-02   2.396056e-02   1.824655e-02   2.002439e-02
+    ## sports_playing   1.862914e-02   1.621454e-02   1.343837e-02   1.366770e-02
+    ## cooking          2.249278e-02   1.898229e-01   6.064581e-02   2.269156e-02
+    ## eco              2.067639e-02   9.820261e-03   1.692768e-02   1.374378e-02
+    ## computers        1.638921e-02   1.300458e-02   1.194122e-02   1.415085e-02
+    ## business         1.897658e-02   1.149444e-02   8.722867e-03   9.480608e-03
+    ## outdoors         1.151011e-02   1.389399e-02   5.072832e-02   1.231415e-02
+    ## crafts           1.920557e-02   1.067294e-02   1.132472e-02   1.954875e-02
+    ## automotive       2.092373e-02   1.515891e-02   1.249950e-02   1.917840e-02
+    ## art              3.172247e-02   1.459919e-02   1.350830e-02   1.501325e-02
+    ## religion         1.576558e-02   1.357575e-02   1.432370e-02   9.684976e-02
+    ## beauty           1.148602e-02   7.141354e-02   8.631038e-03   1.959338e-02
+    ## parenting        1.377528e-02   1.313035e-02   1.340104e-02   7.629477e-02
+    ## dating           2.500740e-02   1.785816e-02   1.939877e-02   1.235053e-02
+    ## school           1.925708e-02   1.817693e-02   1.110233e-02   5.027167e-02
+    ## personal_fitness 1.774212e-02   1.877573e-02   1.219767e-01   1.830029e-02
+    ## fashion          1.772297e-02   1.043254e-01   1.353095e-02   1.671819e-02
+    ## small_business   1.496451e-02   8.169649e-03   6.149978e-03   8.215974e-03
+    ## spam             3.708754e-04   5.134890e-05   7.182214e-05   5.734507e-05
+    ## adult            2.120928e-02   5.914067e-03   6.617151e-03   7.244052e-03
+    ## total            2.662232e+01   4.321077e+01   4.162413e+01   3.995725e+01
     ##                  cluster_mean.4 cluster_mean.5
-    ## current_events     3.932475e-02   3.990130e-02
-    ## travel             3.415992e-02   3.121762e-02
-    ## photo_sharing      5.666583e-02   5.096545e-02
-    ## tv_film            3.207054e-02   1.981560e-02
-    ## sports_fandom      2.602144e-02   2.422678e-02
-    ## politics           2.378188e-02   2.453764e-02
-    ## food               2.557218e-02   4.154461e-02
-    ## family             2.133174e-02   1.600430e-02
-    ## home_and_garden    1.291690e-02   1.325922e-02
-    ## music              1.650873e-02   1.511961e-02
-    ## news               1.492052e-02   2.069572e-02
-    ## online_gaming      1.830926e-01   1.794523e-02
-    ## shopping           2.186367e-02   2.670215e-02
-    ## health_nutrition   2.653721e-02   2.248779e-01
-    ## college_uni        1.990313e-01   1.824655e-02
-    ## sports_playing     5.006100e-02   1.343837e-02
-    ## cooking            2.363936e-02   6.064581e-02
-    ## eco                9.884808e-03   1.692768e-02
-    ## computers          1.140148e-02   1.194122e-02
-    ## business           8.346356e-03   8.722867e-03
-    ## outdoors           1.189936e-02   5.072832e-02
-    ## crafts             1.006158e-02   1.132472e-02
-    ## automotive         1.590709e-02   1.249950e-02
-    ## art                2.095619e-02   1.350830e-02
-    ## religion           1.309245e-02   1.432370e-02
-    ## beauty             8.027454e-03   8.631038e-03
-    ## parenting          1.205740e-02   1.340104e-02
-    ## dating             1.346352e-02   1.939877e-02
-    ## school             1.006224e-02   1.110233e-02
-    ## personal_fitness   1.706613e-02   1.219767e-01
-    ## fashion            1.390379e-02   1.353095e-02
-    ## small_business     9.324812e-03   6.149978e-03
-    ## spam               2.294053e-04   7.182214e-05
-    ## adult              6.816346e-03   6.617151e-03
-    ## total              4.040246e+01   4.162413e+01
+    ## current_events     4.599484e-02   3.932475e-02
+    ## travel             9.720756e-02   3.415992e-02
+    ## photo_sharing      4.638933e-02   5.666583e-02
+    ## tv_film            2.605716e-02   3.207054e-02
+    ## sports_fandom      4.869726e-02   2.602144e-02
+    ## politics           1.576764e-01   2.378188e-02
+    ## food               2.669135e-02   2.557218e-02
+    ## family             2.214600e-02   2.133174e-02
+    ## home_and_garden    1.399907e-02   1.291690e-02
+    ## music              1.471277e-02   1.650873e-02
+    ## news               1.104946e-01   1.492052e-02
+    ## online_gaming      1.561287e-02   1.830926e-01
+    ## shopping           2.363602e-02   2.186367e-02
+    ## health_nutrition   2.243734e-02   2.653721e-02
+    ## college_uni        2.260919e-02   1.990313e-01
+    ## sports_playing     1.308738e-02   5.006100e-02
+    ## cooking            2.000989e-02   2.363936e-02
+    ## eco                1.062760e-02   9.884808e-03
+    ## computers          3.834765e-02   1.140148e-02
+    ## business           1.155046e-02   8.346356e-03
+    ## outdoors           1.979013e-02   1.189936e-02
+    ## crafts             1.044706e-02   1.006158e-02
+    ## automotive         5.579605e-02   1.590709e-02
+    ## art                1.108910e-02   2.095619e-02
+    ## religion           1.708299e-02   1.309245e-02
+    ## beauty             8.907615e-03   8.027454e-03
+    ## parenting          1.881688e-02   1.205740e-02
+    ## dating             1.714997e-02   1.346352e-02
+    ## school             1.354557e-02   1.006224e-02
+    ## personal_fitness   1.489858e-02   1.706613e-02
+    ## fashion            1.065697e-02   1.390379e-02
+    ## small_business     8.570429e-03   9.324812e-03
+    ## spam               8.742764e-05   2.294053e-04
+    ## adult              5.176408e-03   6.816346e-03
+    ## total              3.773600e+01   4.040246e+01
 
 Now let us explore each of the clusters and see what they tell us about the tweeters lying in them. In order to do this, we have multiplied the centroid value of each cluster by the standard deviation of the dataset and added it to the mean, in order to bring it back to the original scale for proper interpretation.
 
@@ -967,56 +951,6 @@ Now let us explore each of the clusters and see what they tell us about the twee
 
 ``` r
 sort(cluster_kmpp$center[1,]*sigma+mu, decreasing = TRUE)
-```
-
-    ##    sports_fandom         religion             food        parenting 
-    ##     1.130943e-01     9.684976e-02     8.799674e-02     7.629477e-02 
-    ##           family           school    photo_sharing   current_events 
-    ##     5.053898e-02     5.027167e-02     4.978949e-02     4.408882e-02 
-    ##           travel health_nutrition         shopping          cooking 
-    ##     3.023162e-02     2.662955e-02     2.528611e-02     2.269156e-02 
-    ##          tv_film         politics      college_uni           beauty 
-    ##     2.209194e-02     2.158195e-02     2.002439e-02     1.959338e-02 
-    ##           crafts       automotive personal_fitness    online_gaming 
-    ##     1.954875e-02     1.917840e-02     1.830029e-02     1.714491e-02 
-    ##          fashion             news            music              art 
-    ##     1.671819e-02     1.657595e-02     1.562662e-02     1.501325e-02 
-    ##        computers              eco   sports_playing  home_and_garden 
-    ##     1.415085e-02     1.374378e-02     1.366770e-02     1.361356e-02 
-    ##           dating         outdoors         business   small_business 
-    ##     1.235053e-02     1.231415e-02     9.480608e-03     8.215974e-03 
-    ##            adult             spam 
-    ##     7.244052e-03     5.734507e-05
-
-This corresponds to the Cluster 1 from the results assigned as **"Household"**. This represents tweeters who are more family oriented, have kids, are religious and ardent sports fans.
-
-``` r
-sort(cluster_kmpp$center[2,]*sigma+mu, decreasing = TRUE)
-```
-
-    ##         politics             news           travel       automotive 
-    ##     1.576764e-01     1.104946e-01     9.720756e-02     5.579605e-02 
-    ##    sports_fandom    photo_sharing   current_events        computers 
-    ##     4.869726e-02     4.638933e-02     4.599484e-02     3.834765e-02 
-    ##             food          tv_film         shopping      college_uni 
-    ##     2.669135e-02     2.605716e-02     2.363602e-02     2.260919e-02 
-    ## health_nutrition           family          cooking         outdoors 
-    ##     2.243734e-02     2.214600e-02     2.000989e-02     1.979013e-02 
-    ##        parenting           dating         religion    online_gaming 
-    ##     1.881688e-02     1.714997e-02     1.708299e-02     1.561287e-02 
-    ## personal_fitness            music  home_and_garden           school 
-    ##     1.489858e-02     1.471277e-02     1.399907e-02     1.354557e-02 
-    ##   sports_playing         business              art          fashion 
-    ##     1.308738e-02     1.155046e-02     1.108910e-02     1.065697e-02 
-    ##              eco           crafts           beauty   small_business 
-    ##     1.062760e-02     1.044706e-02     8.907615e-03     8.570429e-03 
-    ##            adult             spam 
-    ##     5.176408e-03     8.742764e-05
-
-This corresponds to Cluster 2, which we assigned as **"Informed"**.This represents the set of tweeters who are interested in political, scientific and technological news.
-
-``` r
-sort(cluster_kmpp$center[3,]*sigma+mu, decreasing = TRUE)
 ```
 
     ##    photo_sharing   current_events         shopping          tv_film 
@@ -1038,10 +972,10 @@ sort(cluster_kmpp$center[3,]*sigma+mu, decreasing = TRUE)
     ##           beauty             spam 
     ##     0.0114860243     0.0003708754
 
-We have the unallocated cluster as our third cluster. We dont get any strong characters from this cluster to put a certain demographic on them
+This corresponds to the Cluster 1 from the results assigned as **"Household"**. This represents tweeters who are more family oriented, have kids, are religious and ardent sports fans.
 
 ``` r
-sort(cluster_kmpp$center[4,]*sigma+mu, decreasing = TRUE)
+sort(cluster_kmpp$center[2,]*sigma+mu, decreasing = TRUE)
 ```
 
     ##          cooking    photo_sharing          fashion           beauty 
@@ -1063,35 +997,10 @@ sort(cluster_kmpp$center[4,]*sigma+mu, decreasing = TRUE)
     ##            adult             spam 
     ##     0.0059140669     0.0000513489
 
-This corresponds to the Cluster 4 and corresponds to (in fear of sounding stereotypical) **"Women"**. There are large number of posts related to cooking, sharing a lot of photos and of course, fashion and beauty.
+This corresponds to Cluster 2, which we assigned as **"Informed"**.This represents the set of tweeters who are interested in political, scientific and technological news.
 
 ``` r
-sort(cluster_kmpp$center[5,]*sigma+mu, decreasing = TRUE)
-```
-
-    ##      college_uni    online_gaming    photo_sharing   sports_playing 
-    ##     0.1990313280     0.1830925736     0.0566658250     0.0500610035 
-    ##   current_events           travel          tv_film health_nutrition 
-    ##     0.0393247525     0.0341599237     0.0320705443     0.0265372064 
-    ##    sports_fandom             food         politics          cooking 
-    ##     0.0260214439     0.0255721771     0.0237818808     0.0236393595 
-    ##         shopping           family              art personal_fitness 
-    ##     0.0218636737     0.0213317388     0.0209561859     0.0170661326 
-    ##            music       automotive             news          fashion 
-    ##     0.0165087259     0.0159070928     0.0149205180     0.0139037935 
-    ##           dating         religion  home_and_garden        parenting 
-    ##     0.0134635237     0.0130924538     0.0129169018     0.0120574028 
-    ##         outdoors        computers           school           crafts 
-    ##     0.0118993570     0.0114014759     0.0100622430     0.0100615806 
-    ##              eco   small_business         business           beauty 
-    ##     0.0098848081     0.0093248122     0.0083463556     0.0080274544 
-    ##            adult             spam 
-    ##     0.0068163462     0.0002294053
-
-This is the Cluster 5 from the results which strongly represents **"College"**. We have the people ranging from age 17-22 here who post a lot about colleges and universities, play a lot of online games, share photos, plays sports, watches TV and film.
-
-``` r
-sort(cluster_kmpp$center[6,]*sigma+mu, decreasing = TRUE)
+sort(cluster_kmpp$center[3,]*sigma+mu, decreasing = TRUE)
 ```
 
     ## health_nutrition personal_fitness          cooking    photo_sharing 
@@ -1112,6 +1021,81 @@ sort(cluster_kmpp$center[6,]*sigma+mu, decreasing = TRUE)
     ##     1.110233e-02     8.722867e-03     8.631038e-03     6.617151e-03 
     ##   small_business             spam 
     ##     6.149978e-03     7.182214e-05
+
+We have the unallocated cluster as our third cluster. We dont get any strong characters from this cluster to put a certain demographic on them
+
+``` r
+sort(cluster_kmpp$center[4,]*sigma+mu, decreasing = TRUE)
+```
+
+    ##    sports_fandom         religion             food        parenting 
+    ##     1.130943e-01     9.684976e-02     8.799674e-02     7.629477e-02 
+    ##           family           school    photo_sharing   current_events 
+    ##     5.053898e-02     5.027167e-02     4.978949e-02     4.408882e-02 
+    ##           travel health_nutrition         shopping          cooking 
+    ##     3.023162e-02     2.662955e-02     2.528611e-02     2.269156e-02 
+    ##          tv_film         politics      college_uni           beauty 
+    ##     2.209194e-02     2.158195e-02     2.002439e-02     1.959338e-02 
+    ##           crafts       automotive personal_fitness    online_gaming 
+    ##     1.954875e-02     1.917840e-02     1.830029e-02     1.714491e-02 
+    ##          fashion             news            music              art 
+    ##     1.671819e-02     1.657595e-02     1.562662e-02     1.501325e-02 
+    ##        computers              eco   sports_playing  home_and_garden 
+    ##     1.415085e-02     1.374378e-02     1.366770e-02     1.361356e-02 
+    ##           dating         outdoors         business   small_business 
+    ##     1.235053e-02     1.231415e-02     9.480608e-03     8.215974e-03 
+    ##            adult             spam 
+    ##     7.244052e-03     5.734507e-05
+
+This corresponds to the Cluster 4 and corresponds to (in fear of sounding stereotypical) **"Women"**. There are large number of posts related to cooking, sharing a lot of photos and of course, fashion and beauty.
+
+``` r
+sort(cluster_kmpp$center[5,]*sigma+mu, decreasing = TRUE)
+```
+
+    ##         politics             news           travel       automotive 
+    ##     1.576764e-01     1.104946e-01     9.720756e-02     5.579605e-02 
+    ##    sports_fandom    photo_sharing   current_events        computers 
+    ##     4.869726e-02     4.638933e-02     4.599484e-02     3.834765e-02 
+    ##             food          tv_film         shopping      college_uni 
+    ##     2.669135e-02     2.605716e-02     2.363602e-02     2.260919e-02 
+    ## health_nutrition           family          cooking         outdoors 
+    ##     2.243734e-02     2.214600e-02     2.000989e-02     1.979013e-02 
+    ##        parenting           dating         religion    online_gaming 
+    ##     1.881688e-02     1.714997e-02     1.708299e-02     1.561287e-02 
+    ## personal_fitness            music  home_and_garden           school 
+    ##     1.489858e-02     1.471277e-02     1.399907e-02     1.354557e-02 
+    ##   sports_playing         business              art          fashion 
+    ##     1.308738e-02     1.155046e-02     1.108910e-02     1.065697e-02 
+    ##              eco           crafts           beauty   small_business 
+    ##     1.062760e-02     1.044706e-02     8.907615e-03     8.570429e-03 
+    ##            adult             spam 
+    ##     5.176408e-03     8.742764e-05
+
+This is the Cluster 5 from the results which strongly represents **"College"**. We have the people ranging from age 17-22 here who post a lot about colleges and universities, play a lot of online games, share photos, plays sports, watches TV and film.
+
+``` r
+sort(cluster_kmpp$center[6,]*sigma+mu, decreasing = TRUE)
+```
+
+    ##      college_uni    online_gaming    photo_sharing   sports_playing 
+    ##     0.1990313280     0.1830925736     0.0566658250     0.0500610035 
+    ##   current_events           travel          tv_film health_nutrition 
+    ##     0.0393247525     0.0341599237     0.0320705443     0.0265372064 
+    ##    sports_fandom             food         politics          cooking 
+    ##     0.0260214439     0.0255721771     0.0237818808     0.0236393595 
+    ##         shopping           family              art personal_fitness 
+    ##     0.0218636737     0.0213317388     0.0209561859     0.0170661326 
+    ##            music       automotive             news          fashion 
+    ##     0.0165087259     0.0159070928     0.0149205180     0.0139037935 
+    ##           dating         religion  home_and_garden        parenting 
+    ##     0.0134635237     0.0130924538     0.0129169018     0.0120574028 
+    ##         outdoors        computers           school           crafts 
+    ##     0.0118993570     0.0114014759     0.0100622430     0.0100615806 
+    ##              eco   small_business         business           beauty 
+    ##     0.0098848081     0.0093248122     0.0083463556     0.0080274544 
+    ##            adult             spam 
+    ##     0.0068163462     0.0002294053
 
 This is Cluster 6 from our k-means results and are the **"Body Conscious"** population. They are very concerned about health and nutrition, cooking and food. They also tweet a lot about personal\_fitness and outdoors which corresponds to their demographic.
 
