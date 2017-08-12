@@ -1,0 +1,721 @@
+---
+title: "STA380 - Exercise01"
+author: "Siddhant Shah, Sidhaarthan Velur Golpalakrishnan, Saswata Das and Anurag Agarwal"
+date: "10 August 2017"
+output: rmarkdown::github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+```
+
+
+### Probability Practice
+
+##### Part A
+
+Let X be the random variable with following space - 
+
+* X = TC means True Clicker
+* X = RC means Random Clicker
+
+Let Y be the random variable with following space - 
+
+* Y = Yes means User answered Yes
+* Y = No means User answered No
+
+From the information given, we know that 
+
+* P(X=RC) = 0.3
+* P(Y=Yes|X=RC) = 0.5
+* P(Y=Yes) = 0.65
+
+We need to find P(Y=Yes|X=TC)
+
+From Total Law of Probability,
+
+P(Y=Yes) = P(Y=Yes|X=TC)P(X=TC) + P(Y=Yes|X=RC)P(X=RC)
+
+=> 0.65 = P(Y=Yes|X=TC)\*0.7 + 0.5\*0.3
+
+=> P(Y=Yes|X=TC) = 5/7
+
+Fraction of people who are truthful clickers and answered yes = 5/7
+
+#####Part B.
+
+From the information given, we know that 
+
+Sensitivity  =   0.993 = P(PT/D)
+Specificity  =   0.9999 = P(NT/D')
+P(D)         =   0.0025% = 0.000025
+
+where PT  - Positive test
+NT  - Negative test
+D   - Person has the disease
+D'  - Person does not have the disease
+
+We need to find P(D/PT)
+
+We know, by Bayes' theorem,
+
+          P(D/PT) = P(D) * P(PT/D) / P(PT)
+                  
+                  = 0.000025*0.993 / P(PT)                              --------- (1)
+                  
+          
+          P(PT)   = P(PT, D) + P(PT, D')
+          
+                  = P(PT|D)*P(D) + P(PT|D')*P(D')
+                  
+                  = 0.993*0.000025 + (1-0.9999)*(1-0.000025)
+                  
+          P(PT)   = 0.000124822                                         --------- (2)
+          
+
+Substituting (2) in (1):
+
+          P(D/PT) = 0.000025*0.993 / 0.000124822
+          
+          P(D/PT) = 0.1988 (approx 20%)   
+  
+From the above result, we can conclude that the probability of a positive test result truly detecting a disease is only about 20%. Therefore, the results of this test is not a good measure of detection due to the high ***false positive*** rate.
+
+------------
+
+
+### Green Building 
+
+The case is to decide whether building a green building is profitable over building a non-green building. Following are the characteristics of the building that is to be built - 
+
+* Location : Austin Downtown Area
+* Number of stories = 15
+* Size = 250,000. This is not mentioned in the case, but this is the assumption taken by the stats guru. So we have made the same assumption
+
+**EDA**
+
+Reading the data and creating subsets based on green rating.
+
+```{r}
+
+greenbuildings = read.csv("C:\\Users\\sasia\\Desktop\\McCombs School of Business\\Summer Semester\\Introduction to Predictive Modeling\\Part-2-Dr.James\\Assignments\\Assignment-1\\greenbuildings.csv",sep=',')
+
+#Replacing missing values with mean and converting into right datatype
+
+for(i in 1:ncol(greenbuildings)){
+  greenbuildings[is.na(greenbuildings[,i]), i] <- mean(greenbuildings[,i], na.rm = TRUE)
+}
+
+greenbuildings$LEED <- as.factor(greenbuildings$LEED)
+greenbuildings$Energystar <- as.factor(greenbuildings$Energystar)
+greenbuildings$renovated <- as.factor(greenbuildings$renovated)
+greenbuildings$amenities <- as.factor(greenbuildings$amenities)
+
+green = subset(greenbuildings, green_rating== 1)
+non_green = subset(greenbuildings, green_rating== 0)
+
+```
+
+
+Studying correlations between variables in the datasets split by green rating.
+
+```{r}
+library(corrplot)
+
+varnumeric = c('size',	'Rent',	'empl_gr',	'leasing_rate',	'stories',	'age',	'cd_total_07',	'hd_total07',	'total_dd_07',	'Precipitation',	'Gas_Costs',	'Electricity_Costs',	'cluster_rent')
+
+
+par(mfrow=c(1,2))
+
+corr_data_eval1 = cor(green[varnumeric],use = "complete.obs")
+corrplot::corrplot(corr_data_eval1,method="color")
+
+corr_data_eval2 = cor(non_green[varnumeric],use = "complete.obs")
+corrplot::corrplot(corr_data_eval2,method="color")
+
+
+```
+
+From the the above correlation matrices, we can observe that there are few strongly correlated variables, however, these are not with rent per se. Plotting these strongly correlated variables to understand their relationships better and derive meaningful insights.
+
+```{r}
+par(mfrow=c(3,2))
+
+
+plot(non_green$stories, non_green$size, main = 'Non Green : Stories vs Size', xlab = 'stories',ylab = 'size')
+plot(green$stories, green$size, main = 'Green : Stories vs Size', xlab = 'stories',ylab = 'size')
+
+
+plot(non_green$Precipitation, non_green$Gas_Costs, main = 'Non Green : Precipitation vs Gas_Costs', xlab = 'Precipitation',ylab = 'Gas_Costs')
+plot(green$Precipitation, green$Gas_Costs, main = 'Green : Precipitation vs Gas_Costs', xlab = 'Precipitation',ylab = 'Gas_Costs')
+
+
+plot(non_green$Electricity_Costs, non_green$hd_total07, main = 'Non Green : Electricity_Costs vs Size', xlab = 'Electricity_Costs',ylab = 'hd_total07')
+plot(green$Electricity_Costs, green$hd_total07, main = 'Green : Electricity_Costs vs Size', xlab = 'Electricity_Costs',ylab = 'hd_total07')
+
+```
+
+Now that we understand the data better, we dissect the analysis of the Stats Guru. On doing so, we observe the following errors - 
+
+* In his data processing, he removed buildings with occupancy less than 10%. While this makes sense, this is not enough to generalize the rents of green buildings vs non-green buildings. 
+* Given that the dataset contains information about buildings across the United States, the variance in the dataset being studied is huge given we know several features about the desired building. 
+
+Let's look at the bi-variate analysis of **Rent vs Size** of the property and check if the behavior is as expected.
+
+```{r echo=TRUE}
+plot(greenbuildings$Rent, greenbuildings$size, main = 'Rent vs Size - per sqft', xlab = 'Rent',ylab = 'Size')
+
+```
+
+Normally, we would expect that rent per sq foot would increase with increase in the number of stories. But this is not something we observe from the plot. 
+
+
+**Our Strategy -**
+
+Filter the dataset so that the buildings contain features which are similar to features of the building we are planning to build. Following are the filters we used on the variables available - 
+
+* **12 < Number of stories < 18** : Given that our building is going to be of 15 stories, we picked buildings with stories between 12 and 18 so that they represent similarity
+* **Amenities =1** : This makes sense because there is a high chance that downtown area will have atleast one restaurant, bank, convenience store, retail store
+* **200,000 < Size < 300,000** 
+* **Age < 30** 
+
+The initial dataset contained 7894 rows. The dataset after applying the above filters contained 249 (3%) rows of which 44 are green certified and 205 are not. 
+
+
+
+**Comparison of average rent between Non-Green Buildings and Green Buildings**
+
+```{r}
+
+par(mfrow=c(2,1))
+
+#Histogram by Size
+
+hist(non_green$size,breaks=500,pch=19, main = "Range of non green buildings chosen by size")
+abline(v=200000,lwd=2, col="blue")
+abline(v=300000,lwd=2, col="blue")
+
+hist(green$size,breaks=500,pch=19, main = "Range of green buildings chosen by size")
+abline(v=200000,lwd=2, col="blue")
+abline(v=300000,lwd=2, col="blue")
+
+
+par(mfrow=c(2,1))
+
+#Histogram by stories
+
+hist(non_green$stories,breaks = 50,pch=19, main = "Range of non green buildings chosen by stories")
+abline(v=12,lwd=2, col="blue")
+abline(v=18,lwd=2, col="blue")
+
+hist(green$stories,breaks = 50,pch=19, main = "Range of green buildings chosen by stories")
+abline(v=12,lwd=2, col="blue")
+abline(v=18, col="blue")
+
+```
+
+**Filtering for buildings similar to the one to be constructed**
+
+```{r}
+
+data_filtered = greenbuildings[(greenbuildings['stories'] >= 12) & (greenbuildings['stories'] <= 18) & (greenbuildings['amenities'] ==1)  & (greenbuildings['age'] <= 37) & (greenbuildings['size'] >= 200000) & (greenbuildings['size'] <= 300000)  ,]
+
+#For Green Buildings
+data_filtered_green = data_filtered[data_filtered$green_rating==1,]
+
+#Non-Green Buildings
+data_filtered_non_green = data_filtered[data_filtered$green_rating==0,]
+```
+
+
+```{r}
+par(mfrow=c(1,1))
+
+#Plotting Rent vs Size
+
+plot(data_filtered_non_green$size,data_filtered_non_green$Rent,main="Size of Building vs Rent Non-Green Buildings",xlab="Size", ylab="Rent",ylim = c(10,80),xlim=c(200000,300000))
+
+abline(lm(Rent~size,data=data_filtered_non_green),lwd=2, col="red")
+
+plot(data_filtered_green$size,data_filtered_green$Rent,main="Size of Building vs Rent Green Buildings",xlab="Size", ylab="Rent",ylim = c(10,80),xlim=c(200000,300000))
+
+abline(lm(Rent~size,data=data_filtered_green),lwd=2, col="red")
+
+```
+
+We see from the above plots that for size 250000, non-green buildings generate a higher rent when compared to green buildings, contradicting the findings from the "Excel-Guru" 
+
+```{r}
+par(mfrow=c(1,1))
+
+#Plotting Rent vs Age
+
+plot(data_filtered_non_green$age,data_filtered_non_green$Rent,main="Age of Building vs Rent Non-Green Buildings",xlab="Age", ylab="Rent",ylim = c(10,80),xlim=c(0,30))
+
+abline(lm(Rent~age,data=data_filtered_non_green),lwd=2, col="red")
+
+plot(data_filtered_green$age,data_filtered_green$Rent,main="Age of Building vs Rent Green Buildings",xlab="Age", ylab="Rent",ylim = c(10,80),xlim=c(0,30))
+
+abline(lm(Rent~age,data=data_filtered_green),lwd=2, col="red")
+
+```
+
+
+To validate this, we also compared rents between green and non-green bildings based on the age of the buildings. This also shows a similar relationship as seen above, with the rent of non-green buildings to remain relatively higher as compared to green buildings.
+
+
+
+----------
+
+
+### Bootstrapping
+
+#####(a) Import data
+
+```{r echo=TRUE}
+library(mosaic)
+library(quantmod)
+library(foreach)
+
+#Import ETFs
+myStocks = c("SPY","TLT","LQD","EEM","VNQ")
+getSymbols(myStocks)
+
+# Adjust for splits and dividends
+SPYa = adjustOHLC(SPY)
+TLTa = adjustOHLC(TLT)
+LQDa = adjustOHLC(LQD)
+EEMa = adjustOHLC(EEM)
+VNQa = adjustOHLC(VNQ)
+```
+
+#####(b) Risk/Return properties of each asset class
+
+In order to understand the risk/return properties of each asset class, our plan is as follows - 
+
+* Find return on daily close for 20 trading days using bootstrap sampling method from entire data for each asset class individually
+* Repeat this 10,000 times to obtain 10,000 different returns for each asset class
+* Compute mean and standard deviation on returns for each ETF to understand risk and return
+
+```{r echo=TRUE}
+library(knitr)
+
+# Combine close to close changes in a single matrix
+all_returns = cbind(ClCl(SPYa),ClCl(TLTa),ClCl(LQDa),ClCl(EEMa),ClCl(VNQa))
+all_returns = as.matrix(na.omit(all_returns))
+
+# Estimate mean and variance of total returns for 20 trading days for each ETF
+return_total = matrix(0,10000,5) #zero matrix corresponding to 10,000 iterations for each of the 5 asset classes
+num_iter = 10000
+
+set.seed(123)
+for (iter in 1:num_iter){
+initial_wealth = c(100000,100000,100000,100000,100000) #assume investment of 100,000 in each ETF
+total_wealth = initial_wealth
+n_days = 20 
+  #Find return for 20 trading days using bootstrap sampling
+  for(today in 1:n_days) {
+    return.today = resample(all_returns, 1, orig.ids=FALSE)
+    total_wealth = total_wealth + total_wealth*return.today
+  }
+return_total[iter,1] = total_wealth[1] - initial_wealth[1]
+return_total[iter,2] = total_wealth[2] - initial_wealth[2]
+return_total[iter,3] = total_wealth[3] - initial_wealth[3]
+return_total[iter,4] = total_wealth[4] - initial_wealth[4]
+return_total[iter,5] = total_wealth[5] - initial_wealth[5]
+}
+
+#Compute mean and variance for each asset class from return_total
+risk_return_table = matrix(0,5,2)
+rownames(risk_return_table) = c("SPY","TLT","LQD","EEM","VNQ")
+colnames(risk_return_table) = c("Return_Mean","Return_SD")
+risk_return_table[,1] = colMeans(return_total)
+risk_return_table[1,2] = sd(return_total[,1])
+risk_return_table[2,2] = sd(return_total[,2])
+risk_return_table[3,2] = sd(return_total[,3])
+risk_return_table[4,2] = sd(return_total[,4])
+risk_return_table[5,2] = sd(return_total[,5])
+rankMean=transform(risk_return_table, Return_Mean.rank = ave(Return_Mean, FUN = function(x) rank(-x, ties.method = "first")))
+rankSD=transform(rankMean, Return_SD.rank = ave(Return_SD, FUN = function(x) rank(-x, ties.method = "first")))
+kable(rankSD, caption="Risk/Return for each ETF")
+```
+
+We assume mean return to be a measure for expected return on each ETF, and SD of return to be the measure of risk associated. The table above ranks each ETF based on risk/return for initial wealth = $100,000. This rank can also be considered as the ordering of aggressiveness of an ETF in decreasing order.
+
+* EEM gives highest return on average, but is also the most risky. 
+* LQD gives the lowest returns on average but is least risky. 
+
+Let's find how these ETF's are correlated with each other by computing the correlation
+
+```{r echo=TRUE}
+cor(all_returns)
+```
+
+Observations - 
+
+* SPY has large positive correlation with VNQ
+* LQD and TLT are positively correlated. But they are uncorrelated with all 3 ETF's
+* EEM is positively correlated with SPY and VNQ
+
+#####(c) Portfolio 1 : Equal Split
+
+Portfolio : 20% capital in each ETF
+
+```{r echo=TRUE}
+# Now simulate many different possible scenarios  
+initial_wealth = 100000
+set.seed(123)
+sim1 = foreach(i=1:5000, .combine='rbind') %do% {
+	total_wealth = initial_wealth
+	weights = c(0.2, 0.2, 0.2, 0.2, 0.2)
+	n_days = 20
+	wealthtracker = rep(0, n_days)
+	for(today in 1:n_days) {
+		return.today = resample(all_returns, 1, orig.ids=FALSE)
+		holdings = weights * total_wealth
+		holdings = holdings + holdings*return.today
+		total_wealth = sum(holdings)
+		wealthtracker[today] = total_wealth
+	}
+	wealthtracker
+}
+
+# Profit/loss
+mean(sim1[,n_days])
+hist(sim1[,n_days]- initial_wealth, breaks=30, main="Distribution of Final Return", xlab="Final Return")
+
+# Calculate 5% value at risk
+quantile(sim1[,n_days], 0.05) - initial_wealth
+```
+
+* The expected return at the end of 20 trading days for portfolio with equal asset allocation = $`r floor(mean(sim1[,n_days]) - initial_wealth)`
+* Expected loss 5% of the time = $`r floor(abs(quantile(sim1[,n_days], 0.05) - initial_wealth))`
+
+This does not seem to be a good investment strategy given low returns on average against high losses 5% of the times
+
+#####(d) Portfolio 2 : Safer than equal split
+
+Let's allocate funds with a more conservative approach and take risks less than Portfolio 1. The plan is to minimize VaR without thinking much about Returns 
+
+* From the risk/return table obtained in part (b), we know that LQD is the least risky asset. We will allocate largest proportion to this ETF
+* From the correlation matrix, we found that LQD has lowest correlation with EEM (0.08) and VNQ (0.06). Absence of correlation in the elements of the portfolio ensures that losses do not multiply in case either of them goes down. So we have allocated remaining assets equally in EEM and VNQ
+
+Safe Portfolio - 
+
+* LQD : 80%
+* EEM : 10%
+* VNQ : 10%
+
+Portfolio : 33% allocation each in SPY, TLT and LQD
+
+```{r echo=TRUE}
+# Now simulate many different possible scenarios  
+set.seed(123)
+initial_wealth = 100000
+sim2 = foreach(i=1:5000, .combine='rbind') %do% {
+	total_wealth = initial_wealth
+	weights = c(0, 0, 0.8, 0.1, 0.1)
+	n_days = 20
+	wealthtracker = rep(0, n_days)
+	for(today in 1:n_days) {
+		return.today = resample(all_returns, 1, orig.ids=FALSE)
+		holdings = weights * total_wealth #Redistribute wealth after every trading day
+		holdings = holdings + holdings*return.today
+		total_wealth = sum(holdings)
+		wealthtracker[today] = total_wealth
+	}
+	wealthtracker
+}
+
+# Profit/loss
+mean(sim2[,n_days])
+hist(sim2[,n_days]- initial_wealth, breaks=30, main="Distribution of Final Return", xlab="Final Return")
+
+# Calculate 5% value at risk
+quantile(sim2[,n_days], 0.05) - initial_wealth
+```
+
+* The expected return at the end of 20 trading days for portfolio with equal asset allocation = $`r floor(mean(sim2[,n_days]) - initial_wealth)`
+* Expected loss 5% of the time = $`r floor(abs(quantile(sim2[,n_days], 0.05) - initial_wealth))`
+
+#####(e) Portfolio 3 : More aggressive than equal split
+
+Let's allocate funds with a more aggressive approach and take risks more than Portfolio 1. The plan is to maximize Returns without thinking much about VaR 
+
+* From the risk/return table obtained in part (b), we know that EEM gives the highest returns (1.9 times of the second highest ETF). We will allocate largest proportion to EEM
+* From the correlation matrix, we found that EEM has positive correlation with SPY (0.4) and VNQ (0.3). Positive correlation in the elements of the portfolio ensures that returns multiply in case either of them goes up. Although SPY has slightly higher correlation with EEM as compared with VNQ, the latter gives higher returns as seen from (b). So we have allocated remaining assets to VNQ
+
+Aggressive Portfolio - 
+
+* EEM : 90%
+* VNQ : 10%
+
+```{r echo=TRUE}
+# Now simulate many different possible scenarios  
+set.seed(123)
+initial_wealth = 100000
+sim3 = foreach(i=1:5000, .combine='rbind') %do% {
+	total_wealth = initial_wealth
+	weights = c(0, 0, 0, 0.9, 0.1)
+	n_days = 20
+	wealthtracker = rep(0, n_days)
+	for(today in 1:n_days) {
+		return.today = resample(all_returns, 1, orig.ids=FALSE)
+		holdings = weights * total_wealth
+		holdings = holdings + holdings*return.today
+		total_wealth = sum(holdings)
+		wealthtracker[today] = total_wealth
+	}
+	wealthtracker
+}
+
+head(sim3)
+hist(sim3[,n_days], 25, main="Distribution of Final Wealth", xlab="Final Wealth")
+
+# Profit/loss
+mean(sim3[,n_days])
+hist(sim3[,n_days]- initial_wealth, breaks=30, main="Distribution of Final Return", xlab="Final Return")
+
+# Calculate 5% value at risk
+quantile(sim3[,n_days], 0.05) - initial_wealth
+```
+
+* The expected return at the end of 20 trading days for aggressive portfolio = $`r floor(mean(sim3[,n_days]) - initial_wealth)`
+* VaR 5% = $`r floor(initial_wealth - quantile(sim3[,n_days], 0.05))`
+
+```{r echo=FALSE}
+profit = c(floor(mean(sim1[,n_days]) - initial_wealth),floor(mean(sim2[,n_days]) - initial_wealth),floor(mean(sim3[,n_days]) - initial_wealth))
+ 
+value_at_risk = c(floor(abs(quantile(sim1[,n_days], 0.05) - initial_wealth)),floor(abs(quantile(sim2[,n_days], 0.05) - initial_wealth)),floor(abs(quantile(sim3[,n_days], 0.05) - initial_wealth)))
+ 
+par(mfrow = c(2,1))
+
+barplot(profit, main="2 trading week - Profit by portfolio", ylim=c(0,2000),cex.names=0.8,
+        names.arg=c("Equal Portfolio", "Safe Portfolio", "Aggressive Portfolio"))
+
+barplot(value_at_risk, main="5% Value at risk", horiz=TRUE,las=1,cex.names=0.7,
+        names.arg=c("Equal Portfolio", "Safe Portfolio", "Risky Portfolio"))
+```
+
+### Market Segmentation
+
+This was data collected in the course of a market-research study using followers of the Twitter account of a large consumer brand that shall remain nameless---let's call it "NutrientH20" just to have a label. The goal here was for NutrientH20 to understand its social-media audience a little bit better, so that it could hone its messaging a little more sharply
+
+##### General Summary
+
+The data presented here is of 7882 users whose tweets have been classified into 36 categories representing an area of interest. However, the categorization was done manually and hence we cannot rely on it solely. The values in this table represent the number of tweets for each person in that category.
+
+Our aim is to identify any interesting market segments that stands out for the data. In this case, we have defined "market segment" as a group of people having correlated interests as observed from their tweets.
+
+##### Loading Required Packages
+
+```{r}
+library(ggplot2)
+library(LICORS) 
+library(foreach)
+library(mosaic)
+library(corrplot)
+library(devtools)
+install_github("tapj/biotyper")
+library(BiotypeR)
+library(fpc)
+set.seed(123)
+```
+
+##### Reading the data 
+
+```{r echo=FALSE}
+data = read.csv('C:\\Users\\sasia\\Desktop\\McCombs School of Business\\Summer Semester\\Introduction to Predictive Modeling\\Part-2-Dr.James\\Assignments\\Assignment-1\\social_marketing.csv')
+```
+
+We did a basic summary of the data to identify the number of tweets in each of the categories
+```{r}
+summary(data)
+```
+The summary gave us a basic sense of the number of tweets in each of the categories- The minimum, maximum and median values
+
+##### Data Treatment and Scaling
+
+We removed the first column which has an alphanumeric code of each tweeter, the chatter and uncategorized columns and scaled the data by taking the proportion of the tweets in each of the categories so that the sum of the proportions add up to one.
+
+Additionally, it is very important to scale the values to avoid any unfair weightage given by the clustering algorithms due to a higher scale or different unit of data in one column
+
+```{r}
+data_mod = subset(data,select=-c(chatter,uncategorized))
+
+data_mod$total= rowSums(data_mod[,-1])
+
+for ( i in 2:(ncol(data_mod)-1))
+{
+  data_mod[,i] = data_mod[,i]/data_mod$total
+}
+
+data_scaled_1 = data_mod[,c(-1,-36)]
+
+data_scaled = scale(data_scaled_1, center=TRUE, scale=TRUE)
+
+mu = attr(data_scaled,"scaled:center")
+sigma = attr(data_scaled,"scaled:scale")
+
+Y =data.frame(data_scaled)
+```
+
+##### Correlation Plot
+
+Since we are to find out people having correlated interests, we thought it would be better to have an idea of what kind of tweet categories can be clustered together. Hence, we decided to start off with a correlation plot.
+
+```{r}
+corr_data_eval = cor(data_scaled_1)
+corrplot::corrplot(corr_data_eval,method="color")
+```
+
+The problem with this method is that although we have a clear idea about the pairwise correlation of the categories, we dont have an opportunity of creating clusters of more than 2 categories which might give us an indication of a particular correlation between interests.
+
+##### Identify the ideal number of clusters
+
+Initially, we used k-means clustering to identify the clusters that the individual tweeters fall into. We plotted CH-index and the number of clusters to identify the ideal number of clusters to be used, keeping in mind that a higher value of Ch-index indicates more robust clusters
+
+```{r}
+#Using a package from GitHub to compute the CH Index and comparing clusters
+ch = CH.index(Y, distance.JSD, kvector = 1:15, clusterSim=FALSE)
+plot(ch, xlab=" k clusters", ylab="CH index")
+abline(v=which(ch==max(ch)), lwd=2, col="red")
+```
+
+From the CH-index, we identified that 6 clusters gave the best cluster in terms of robustness. So we decided to run k-means with k=6
+
+#### K-Means Clustering
+
+```{r}
+cluster_kmpp = kmeanspp(Y, k=6, nstart=30)
+summary(cluster_kmpp)
+```
+
+Now let us explore each of the clusters and see what they tell us about the tweeters lying in them. In order to do this, we have multiplied the centroid value of each cluster by the standard deviation of the dataset and added it to the mean, in order to bring it back to the original scale for proper interpretation.
+
+```{r}
+for (i in 1:6)
+{
+  print (cluster_kmpp$center[i,]*sigma + mu)
+}
+
+```
+
+
+```{r}
+Cluster_Property<- as.data.frame(matrix(0, ncol = 1, nrow = ncol(data_mod)-1))
+
+for (i in 1:6)
+{
+mask = data_mod[which(cluster_kmpp$cluster == i),]
+cluster_mean <- colMeans(mask[,2:ncol(mask)])
+Cluster_Property <- cbind(Cluster_Property,cluster_mean)
+}
+
+Cluster_Properties <- data.frame(Cluster_Property)[,-1]
+
+print (Cluster_Properties)
+```
+
+
+Now let us explore each of the clusters and see what they tell us about the tweeters lying in them. In order to do this, we have multiplied the centroid value of each cluster by the standard deviation of the dataset and added it to the mean, in order to bring it back to the original scale for proper interpretation.
+
+##### Cluster Profiling
+
+```{r}
+sort(cluster_kmpp$center[1,]*sigma+mu, decreasing = TRUE)
+```
+
+This corresponds to the Cluster 1 from the results assigned as **"Household"**. This represents tweeters who are more family oriented, have kids, are religious and ardent sports fans.
+
+```{r}
+sort(cluster_kmpp$center[2,]*sigma+mu, decreasing = TRUE)
+```
+
+This corresponds to Cluster 2, which we assigned as **"Informed"**.This represents the set of tweeters who are interested in political, scientific and  technological news.
+
+```{r}
+sort(cluster_kmpp$center[3,]*sigma+mu, decreasing = TRUE)
+```
+
+We have the unallocated cluster as our third cluster. We dont get any strong characters from this cluster to put a certain demographic on them
+
+```{r}
+sort(cluster_kmpp$center[4,]*sigma+mu, decreasing = TRUE)
+```
+
+This corresponds to the Cluster 4 and corresponds to (in fear of sounding stereotypical) **"Women"**. There are large number of posts related to cooking, sharing a lot of photos and of course, fashion and beauty.
+
+
+```{r}
+sort(cluster_kmpp$center[5,]*sigma+mu, decreasing = TRUE)
+```
+
+This is the Cluster 5 from the results which strongly represents **"College"**. We have the people ranging from age 17-22 here who post a lot about colleges and universities, play a lot of online games, share photos, plays sports, watches TV and film.
+
+```{r}
+sort(cluster_kmpp$center[6,]*sigma+mu, decreasing = TRUE)
+```
+
+This is Cluster 6 from our k-means results and are the **"Body Conscious"** population. They are very concerned about health and nutrition, cooking and food. They also tweet a lot about personal_fitness and outdoors which corresponds to their demographic.
+
+There are a few categories which are present in almost every cluster. For example, **photo_sharing**, mainly because people use twitter to post a lot of photos and videos; and **current_events**, mostly because twitter is the most important media for sharing any breaking news.
+
+There are also a few clusters which do not show up distinctly in any of the clusters like spam, adult, small business etc and hence could not give a distinct segment.
+
+##### Conclusion
+
+Thus, each of these clusters now have a distinct characteristic of their own, hence being part of distinct market segments. and they can be specifically targeted for messaging.
+
+##### Hierarchical Clustering
+
+Once we completed the process of creating clusters and profiling them, we wanted to understand if our results were consistent across different algorithms of clustering.
+
+So, we decided to use hierarchial clustering but with a twist. We decided to use a dendrogram not to cluster tweeters but get a set of distinct clusters from tweet categories. 
+
+For this we needed to transpose the dataset because we had to start with all 34 variables. Then two nearest clusters are merged into the same cluster. In the end, this algorithm terminates when there is only a single cluster left.
+
+The results of hierarchical clustering can be shown using **dendrogram.The height in the dendrogram at which two clusters are merged represents the distance between two clusters in the data space.
+
+```{r}
+data_caled_trans = t(data_scaled)
+distance_between_tweets = dist(data_caled_trans, method = 'euclidean')
+
+# Now run hierarchical clustering
+h1 = hclust(distance_between_tweets, method='average')
+
+# Plot the dendrogram
+plot(h1, cex=0.8)
+```
+
+Now this brings up a group of clusters which seem to be distributed
+
+Cluster 1. computer, travel, politics, news, automotive - Informed 
+Cluster 2. sports_playing, online_gaming, college_uni - College
+Cluster 3. beauty, cooking, fashion, photo_sharing. shopping - Women
+Cluster 4. health_nutrition, personal_fitness, outdoors - BodyConscious
+Cluster 5. religion, parenting, sports_fandom, food, school, family - Household
+
+We have a set of 5 broad clusters of tweet categories.
+
+From the clusters, we can see that the results of the k-means clustering and the results of trying to bucket different variables together gives us pretty much the same results.
+
+### Principal Component Analysis
+
+A basic Principal Component Analysis was done to identify the variability in the data, and whether it made sense to reduce variable count by taking the principal components
+
+```{r}
+# Run PCA
+pc1 = prcomp(data_scaled, scale.=TRUE)
+plot(pc1, main="Principal Components")
+```
+
+```{r}
+# Look at the basic plotting and summary methods
+# A more informative biplot
+loadings = pc1$rotation
+scores = pc1$x
+summary(pc1)
+```
+
+Each principal component has only a very small variation in the data explained. So it does not make sense to transform the variables, because it requires close to 27 principal components to obtain about 90% variance. So we can directly use the variables
